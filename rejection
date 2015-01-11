@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import numpy as np
+import pylab as pl
+
+def create_q():
+    return np.random.rand() * 4  
+
+def create_p(x):
+    return 0.3 * np.exp(-(x - 0.3) ** 2) + 0.7 * np.exp(-(x - 2.) ** 2 / 0.5) 
+
+def rejection_sampling(n):
+    M = 0.8
+    sample = np.zeros(n)
+    count = 0
+    for i in range(n):
+        accept = False
+        while not accept:
+            x = create_q()
+            u = np.random.rand() * M
+            if u < create_p(x):
+                accept = True
+                sample[i] = x
+            else:
+                count += 1
+    print count
+    return sample
+
+if __name__ == '__main__':
+    x = np.arange(0,4,0.01)
+    realdata = create_p(x)
+    pl.plot(x,realdata,'k',lw=6)
+    samples = rejection_sampling(1000)
+    pl.hist(samples,15,normed=1,fc='k')
+    pl.xlabel('x',fontsize=24)
+    pl.ylabel('p(x)',fontsize=24)
+    pl.axis([-0.5,4.5,0,1])
+    pl.show()
