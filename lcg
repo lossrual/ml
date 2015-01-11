@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import numpy as np
+
+'''
+    它是根据递归公式：
+
+    N(j+1) = (N(j) * A + B) mod (M)
+
+其中A,B,M是产生器设定的常数。
+
+LCG的周期最大为M，但大部分情况都会少于M。要令LCG达到最大周期，应符合以下条件：
+
+    B,M互质；
+    M的所有质因子都能整除A-1；
+    若M是4的倍数，A-1也是；
+    A,B,N_0都比M小；
+    A,B是正整数。
+'''
+def lcg(x0, n):
+    A = 23 
+    M = 197
+    B = 0
+    rst = np.zeros((n))
+    rst[0] = np.mod(x0 * A + B, M)
+    for i in range(1,n):
+        rst[i] = np.mod(rst[i-1] * A + B, M)
+    return rst
+
+if __name__ == '__main__':
+    print lcg(3,80)
