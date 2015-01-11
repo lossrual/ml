@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+import numpy as np
+import pylab as pl
+
+def create_qsample(x):
+    return np.random.rand(x) * 4
+
+def create_p(x):
+    return 0.3 * np.exp(-(x - 0.3) ** 2) + 0.7 * np.exp(-(x - 2.) ** 2 / 0.5)
+
+def create_q(x):
+    return 4.0
+
+def SIR(n):
+    sample1 = create_qsample(n)
+    sample2 = np.zeros(n, dtype = float)
+    w = np.zeros(n, dtype = float)
+    w = create_p(sample1) / create_q(sample1)
+    w /= np.sum(w)
+    # sample from sample1 according to w
+    w1 = np.zeros(len(w), dtype = float)
+    w1[0] = w[0]
+    for i in range(1, n-1):
+        w1[i] = w1[i-1] + w[i]
+    u = np.random.rand(n)
+    j = 0
+    for i in range(n):
+        index = np.where(u < w1[i])
+        sample2[j:j + np.size(index)] = sample1[i]
+        j += np.size(index)
+        u[index] = 2 #importance recontrol
+    return sample2
+
+if __name__ == '__main__':
+    x = np.arange(-4, 4, 0.1)
+    realdata = create_p(x)
+    pl.plot(x, realdata, 'k', lw = 6)
+    samples = SIR(10000)
+    pl.hist(samples, 15, normed = 1, fc = 'k')
+    pl.xlabel('x', fontsize = 24)
+    pl.ylabel('p(x)', fontsize = 24)
+    pl.axis([-0.5, 4.5, 0, 1])
+    pl.show()
+
